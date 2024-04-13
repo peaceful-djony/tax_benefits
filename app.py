@@ -24,7 +24,7 @@ def send_welcome(message):
 
 @bot.message_handler(commands=['svetlana'])
 def send_svetlana_message(message):
-    bot.send_message(message.chat.id, "test")
+    bot.send_message(message.chat.id, "message from Svetlana")
 
 
 @bot.message_handler()
