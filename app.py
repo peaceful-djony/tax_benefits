@@ -22,6 +22,11 @@ def send_welcome(message):
 """)
 
 
+@bot.message_handler(commands=['svetlana'])
+def send_svetlana_message(message):
+    bot.send_message(message.chat.id, "test")
+
+
 @bot.message_handler()
 def resend_message_to_channel(message):
     bot.send_message(CHANNEL_ID, message.text)
