@@ -15,7 +15,6 @@ RUN echo "**** install Python ****" && \
     if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi && \
     pip install --no-cache --upgrade pip setuptools wheel
 
-
 COPY . /app
 WORKDIR /app
 RUN pip install -r requirements.txt
