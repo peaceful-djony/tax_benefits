@@ -39,7 +39,10 @@ def prepare_data(data):
 
 
 if __name__ == '__main__':
-    df = pd.read_excel('./../data/rostelecom.xlsx',
+    import os
+
+    print(os.getcwd())
+    df = pd.read_excel('./data/rostelecom.xlsx',
                        skiprows=1,
                        usecols='A:L',
                        nrows=89,
