@@ -1,9 +1,15 @@
-# Собрать образ
+# Работа с образом Docker
+## Собрать образ
 ```bash
-docker build . -t seniordev/rostelebot:latest
+docker build . -t seniordev/rostelebot:0.{version_num}
 ```
 
-# Запуск
+## Отправить образ в docker hub
 ```bash
-docker run -d --name tax_benefits seniordev/rostelebot:latest
+docker push seniordev/rostelebot:0.{version_num}
+```
+
+## Запуск
+```bash
+docker run -d --name tax_benefits seniordev/rostelebot:0.{version_num}
 ```
