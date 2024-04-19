@@ -1,5 +1,9 @@
 import telebot
 import pandas as pd
+from Levenshtein import distance as levenshtein_distance
+
+from bcolors import Bcolors
+from regions import regions
 
 TOKEN = "7021553373:AAGi5s3Y7oLJkUkUA3QGOaLEzlb1UXJcb0o"
 
@@ -18,15 +22,17 @@ def send_welcome(message):
 
 @bot.message_handler()
 def resend_message_to_channel(message):
-    requested_region = df[df['Name_lower'].str.contains(message.text.lower())]
-    if requested_region.empty:
+    search_res = find_region(message.text.lower())
+    if not search_res:
         msg = "Такой регион пока не поддерживается. Попробуй ещё раз!"
         bot.send_message(message.chat.id, msg)
-    else:
-        region = requested_region['Субъект Российской Федерации'].values[0]
-        result = requested_region[2024].values[0]
-        res_msg = "положен" if result == "ДА" else "не положен"
-        bot.send_message(message.chat.id, f'В регионе \"{region}\" за 2024 год вычет: {res_msg}')
+        return
+
+    requested_region = df[df['Name_lower'] == search_res]
+    region = requested_region['Субъект Российской Федерации'].values[0]
+    result = requested_region[2024].values[0]
+    res_msg = "положен" if result == "ДА" else "не положен"
+    bot.send_message(message.chat.id, f'В регионе \"{region}\" за 2024 год вычет: {res_msg}')
 
 
 def prepare_data(data):
@@ -38,16 +44,54 @@ def prepare_data(data):
                           .str.replace(to_replace, '').str.strip())
 
 
-if __name__ == '__main__':
-    import os
+def find_region(input_name):
+    """
+    Функция для поиска региона с учетом опечаток
+    """
+    input_name = input_name.lower().strip()
+    best_match = None
+    min_distance = float('inf')
 
-    print(os.getcwd())
+    for region, aliases in regions.items():
+        # Проверяем совпадение с полным названием
+        dist = levenshtein_distance(input_name, region)
+        if dist < min_distance:
+            min_distance = dist
+            best_match = region
+
+        # Проверяем совпадение с сокращениями
+        for alias in aliases:
+            dist = levenshtein_distance(input_name, alias)
+            if dist < min_distance:
+                min_distance = dist
+                best_match = region
+
+    # Возвращаем наилучшее совпадение, если расстояние Левенштейна не слишком велико
+    return best_match if min_distance <= len(input_name) // 2 else None
+
+
+def check_region():
+    not_found_regions = []
+    for reg in df['Name_lower_primary']:
+        r = regions.get(reg, None)
+        if not r:
+            not_found_regions.append(reg)
+
+    if not_found_regions:
+        print(f'{Bcolors.WARNING}Не найдены следующие регионы: {not_found_regions}{Bcolors.WARNING}')
+    else:
+        print(f'{Bcolors.OKGREEN}Все регионы найдены!{Bcolors.ENDC}')
+
+
+if __name__ == '__main__':
     df = pd.read_excel('./data/rostelecom.xlsx',
                        skiprows=1,
                        usecols='A:L',
                        nrows=89,
                        )
     prepare_data(df)
+
+    check_region()
 
     # https://github.com/eternnoir/pyTelegramBotAPI/issues/1259
     bot.infinity_polling(timeout=10, long_polling_timeout=5)
