@@ -3,9 +3,12 @@ import pandas as pd
 from Levenshtein import distance as levenshtein_distance
 
 from bcolors import Bcolors
+import config
 from regions import regions
 
-TOKEN = "7021553373:AAGi5s3Y7oLJkUkUA3QGOaLEzlb1UXJcb0o"
+
+TOKEN = config.TOKEN
+PATH_TO_DATA = "./data/rostelecom.xlsx"
 
 bot = telebot.TeleBot(TOKEN)
 
@@ -84,7 +87,7 @@ def check_region():
 
 
 if __name__ == '__main__':
-    df = pd.read_excel('./data/rostelecom.xlsx',
+    df = pd.read_excel(PATH_TO_DATA,
                        skiprows=1,
                        usecols='A:L',
                        nrows=89,
