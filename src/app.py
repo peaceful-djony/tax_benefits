@@ -34,8 +34,28 @@ def resend_message_to_channel(message):
     requested_region = df[df['Name_lower'] == search_res]
     region = requested_region['Субъект Российской Федерации'].values[0]
     result = requested_region[2024].values[0]
-    res_msg = "положен" if result == "ДА" else "не положен"
-    bot.send_message(message.chat.id, f'В регионе \"{region}\" за 2024 год вычет: {res_msg}')
+    # вот это я чуть ниже поправила
+    # res_msg = "положен" if result == "ДА" else "не положен"
+
+    # новый кусок кода
+    res_msg = "Вычет положен" if result == "ДА" else "Вычет не положен."
+    # извлекаем информацию из ячеек с остальной информацией
+    norm_act = requested_region['Закон ИНВ'].values[0] if not pd.isnull(requested_region['Закон ИНВ'].values[0]) else None
+    max_amount = requested_region['Максимальный размер вычета'].values[0] if not pd.isnull(requested_region['Максимальный размер вычета'].values[0]) else None
+    rate = requested_region['Ставка для исчисления предельной величины'].values[0] if not pd.isnull(requested_region['Ставка для исчисления предельной величины'].values[0]) else None
+    # результирующее сообщение в зависимости от того, что есть. 
+    res_msg = f"{res_msg}.\n"
+    if norm_act is not None:
+        res_msg += f"Регламентирующих закон: {norm_act}\n"
+    if max_amount is not None:
+        res_msg += f"Максимальный размер вычета: {max_amount}\n"
+    if rate is not None:
+        res_msg += f"Ставка для исчисления предельной величины: {rate}"
+    # бот выводит то, что нам надо
+    bot.send_message(message.chat.id, res_msg)
+# конец нового куска кода   
+# вот это убираем 
+# bot.send_message(message.chat.id, f'В регионе \"{region}\" за 2024 год вычет: {res_msg}')
 
 
 def prepare_data(data):
