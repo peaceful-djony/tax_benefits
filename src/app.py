@@ -34,7 +34,19 @@ def resend_message_to_channel(message):
     requested_region = df[df['Name_lower'] == search_res]
     region = requested_region['Субъект Российской Федерации'].values[0]
     result = requested_region[2024].values[0]
-    res_msg = "положен" if result == "ДА" else "не положен"
+
+    res_msg = "положен." if result == "ДА" else "не положен."
+    # извлекаем информацию из ячеек с остальной информацией
+    norm_act = requested_region['Закон ИНВ'].values[0]
+    max_amount = requested_region['Максимальный размер вычета'].values[0]
+    rate = requested_region['Ставка для исчисления предельной величины'].values[0]
+
+    if not pd.isnull(max_amount):
+        res_msg += f"\nМаксимальный размер вычета: {max_amount}"
+    if not pd.isnull(rate):
+        res_msg += f"\nСтавка для исчисления предельной величины: {rate}"
+    if not pd.isnull(norm_act):
+        res_msg += f"\nРегламентирующий закон: {norm_act}"
     bot.send_message(message.chat.id, f'В регионе \"{region}\" за 2024 год вычет: {res_msg}')
 
 
