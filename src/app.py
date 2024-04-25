@@ -46,7 +46,7 @@ def resend_message_to_channel(message):
     if not pd.isnull(rate):
         res_msg += f"\nСтавка для исчисления предельной величины: {rate}"
     if not pd.isnull(norm_act):
-        res_msg += f"\nРегламентирующих закон: {norm_act}"
+        res_msg += f"\nРегламентирующий закон: {norm_act}"
     bot.send_message(message.chat.id, f'В регионе \"{region}\" за 2024 год вычет: {res_msg}')
 
 
