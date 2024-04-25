@@ -1,4 +1,3 @@
-import numpy as np
 import telebot
 import pandas as pd
 from Levenshtein import distance as levenshtein_distance
